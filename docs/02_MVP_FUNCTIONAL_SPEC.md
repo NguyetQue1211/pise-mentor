@@ -1274,7 +1274,7 @@ This section lists functional fields only. Exact database schema should be defin
 * slug,
 * name,
 * photo_url,
-* current_role,
+* role_title,
 * short_bio,
 * location_slugs,
 * discipline_slugs,

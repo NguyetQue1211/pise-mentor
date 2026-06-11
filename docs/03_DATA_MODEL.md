@@ -298,7 +298,7 @@ This table powers:
 | slug                    | text        |      Yes | Unique readable URL slug                                |
 | name                    | text        |      Yes | Mentor display name                                     |
 | photo_url               | text        |       No | External image URL                                      |
-| current_role            | text        |       No | Required only before publish                            |
+| role_title            | text        |       No | Required only before publish                            |
 | short_bio               | text        |       No | Required only before publish                            |
 | location_slugs          | text[]      |      Yes | Default empty array                                     |
 | discipline_slugs        | text[]      |      Yes | Default empty array                                     |
@@ -365,7 +365,7 @@ A mentor profile is considered complete when these fields are present:
 
 * name
 * slug
-* current_role
+* role_title
 * short_bio
 * at least one location slug
 * at least one discipline slug
@@ -429,7 +429,7 @@ A mentor owner can update their own profile content.
 Mentor can edit:
 
 * photo_url
-* current_role
+* role_title
 * short_bio
 * location_slugs
 * discipline_slugs
@@ -626,7 +626,7 @@ A mentor profile is complete when:
 ```text
 name exists
 AND slug exists
-AND current_role exists
+AND role_title exists
 AND short_bio exists
 AND location_slugs length > 0
 AND discipline_slugs length > 0
@@ -848,7 +848,7 @@ This action should:
 Mentor-owned fields:
 
 * photo_url
-* current_role
+* role_title
 * short_bio
 * location_slugs
 * discipline_slugs
@@ -935,7 +935,7 @@ create table mentor_profiles (
   name text not null,
 
   photo_url text,
-  current_role text,
+  role_title text,
   short_bio text,
 
   location_slugs text[] not null default '{}',
@@ -1057,7 +1057,7 @@ insert into filter_options (type, label, slug, sort_order) values
 mentor_profiles
 - name: Nguyen A
 - slug: nguyen-a
-- current_role: Product Manager
+- role_title: Product Manager
 - short_bio: Helps early-career students explore product and technology careers.
 - location_slugs: ['ho-chi-minh-city', 'remote-online']
 - discipline_slugs: ['product-management', 'ux-research']
