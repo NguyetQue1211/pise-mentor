@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import AppHeader from '@/components/AppHeader'
 import ProfileStatusCard from '@/components/ProfileStatusCard'
+import MentorProfileForm, { type MentorProfileFormData } from '@/components/MentorProfileForm'
 import { getCurrentUser } from '@/lib/auth/getCurrentUser'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { getProfileStatus, type MentorProfileForStatus } from '@/lib/mentor/getProfileStatus'
@@ -12,11 +13,23 @@ export default async function MentorProfilePage() {
 
   const admin = createAdminClient()
 
-  const { data: profile } = await admin
-    .from('mentor_profiles')
-    .select('id, name, role_title, short_bio, location_slugs, discipline_slugs, industry_slugs, what_i_can_help_with, calendly_url, is_published')
-    .eq('user_id', user.id)
-    .maybeSingle()
+  const [{ data: profile }, { data: filterRows }] = await Promise.all([
+    admin
+      .from('mentor_profiles')
+      .select(`
+        id, name, photo_url, role_title, short_bio,
+        location_slugs, discipline_slugs, industry_slugs, support_area_slugs,
+        what_i_can_help_with, suitable_mentee_profile, suggested_topics,
+        booking_instruction, calendly_url, is_published
+      `)
+      .eq('user_id', user.id)
+      .maybeSingle(),
+    admin
+      .from('filter_options')
+      .select('type, slug, label')
+      .eq('is_active', true)
+      .order('sort_order', { ascending: true }),
+  ])
 
   const bookings = profile
     ? await admin
@@ -27,6 +40,14 @@ export default async function MentorProfilePage() {
         .limit(50)
         .then(({ data }) => data ?? [])
     : []
+
+  const rows = filterRows ?? []
+  const filterOptions = {
+    locations: rows.filter((r) => r.type === 'location').map((r) => ({ slug: r.slug, label: r.label })),
+    disciplines: rows.filter((r) => r.type === 'discipline').map((r) => ({ slug: r.slug, label: r.label })),
+    industries: rows.filter((r) => r.type === 'industry').map((r) => ({ slug: r.slug, label: r.label })),
+    supportAreas: rows.filter((r) => r.type === 'support_area').map((r) => ({ slug: r.slug, label: r.label })),
+  }
 
   return (
     <>
@@ -40,6 +61,11 @@ export default async function MentorProfilePage() {
         {profile ? (
           <>
             <ProfileStatusCard status={getProfileStatus(profile as MentorProfileForStatus)} />
+
+            <MentorProfileForm
+              profile={profile as MentorProfileFormData}
+              filterOptions={filterOptions}
+            />
 
             {/* Bookings */}
             <section className="space-y-3">
@@ -65,7 +91,11 @@ export default async function MentorProfilePage() {
                         </div>
                         <div className="text-right shrink-0 ml-4">
                           <p className="text-xs text-neutral-500">
-                            {date.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                            {date.toLocaleDateString('vi-VN', {
+                              day: '2-digit',
+                              month: '2-digit',
+                              year: 'numeric',
+                            })}
                           </p>
                           <p className="text-xs text-neutral-400">
                             {date.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
@@ -77,10 +107,6 @@ export default async function MentorProfilePage() {
                 </div>
               )}
             </section>
-
-            <p className="text-xs text-neutral-400">
-              Profile editing coming soon. Contact PISE admin to update your profile content.
-            </p>
           </>
         ) : (
           <div className="rounded-2xl border border-neutral-200 bg-white px-6 py-5">
