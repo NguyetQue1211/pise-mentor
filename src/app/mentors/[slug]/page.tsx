@@ -2,7 +2,7 @@ import { notFound, redirect } from 'next/navigation'
 import Link from 'next/link'
 import AppHeader from '@/components/AppHeader'
 import MentorTag from '@/components/MentorTag'
-import CalendlyWidget from '@/components/CalendlyWidget'
+import CalendlyButton from '@/components/CalendlyButton'
 import { getCurrentUser } from '@/lib/auth/getCurrentUser'
 import { createClient } from '@/lib/supabase/server'
 
@@ -55,11 +55,11 @@ export default async function MentorProfilePage({ params }: Props) {
   const hasCalendly = !!profile.calendly_url?.startsWith('https://')
 
   const sections: Section[] = [
-    { heading: 'About this mentor', content: profile.short_bio },
-    { heading: 'What I can help with', content: profile.what_i_can_help_with },
-    { heading: 'Good fit for', content: profile.suitable_mentee_profile },
-    { heading: 'Suggested topics to ask', content: profile.suggested_topics },
-    { heading: 'Booking instructions', content: profile.booking_instruction },
+    { heading: 'Giới thiệu về mentor', content: profile.short_bio },
+    { heading: 'Mentor có thể hỗ trợ gì', content: profile.what_i_can_help_with },
+    { heading: 'Phù hợp với ai', content: profile.suitable_mentee_profile },
+    { heading: 'Chủ đề gợi ý để trao đổi', content: profile.suggested_topics },
+    { heading: 'Hướng dẫn đặt lịch', content: profile.booking_instruction },
   ].filter((s): s is Section => !!s.content)
 
   return (
@@ -71,7 +71,7 @@ export default async function MentorProfilePage({ params }: Props) {
         {!profile.is_published && (user.role === 'admin' || user.role === 'mentor') && (
           <div className="rounded-xl bg-warning-50 border border-warning-100 px-4 py-3">
             <p className="text-sm font-medium text-warning-700">
-              This profile is not published — only you can see it.
+              Hồ sơ này chưa được công khai — chỉ bạn mới xem được.
             </p>
           </div>
         )}
@@ -87,8 +87,8 @@ export default async function MentorProfilePage({ params }: Props) {
                 className="w-28 h-28 rounded-2xl object-cover object-top bg-neutral-100"
               />
             ) : (
-              <div className="w-28 h-28 rounded-2xl bg-primary-100 flex items-center justify-center">
-                <span className="text-3xl font-bold text-primary-400">
+              <div className="w-28 h-28 rounded-2xl bg-gradient-primary flex items-center justify-center">
+                <span className="text-3xl font-bold text-white/80">
                   {getInitials(profile.name)}
                 </span>
               </div>
@@ -120,12 +120,6 @@ export default async function MentorProfilePage({ params }: Props) {
                 <MentorTag key={s} label={label(s)} variant="support_area" />
               ))}
             </div>
-
-            {!hasCalendly && (
-              <p className="text-sm text-neutral-400">
-                Booking is temporarily unavailable for this mentor.
-              </p>
-            )}
           </div>
         </div>
 
@@ -147,13 +141,7 @@ export default async function MentorProfilePage({ params }: Props) {
 
         {/* Bottom CTA */}
         <div className="border-t border-neutral-200 pt-6 space-y-4">
-          {hasCalendly ? (
-            <CalendlyWidget url={profile.calendly_url} mentorProfileId={profile.id} />
-          ) : (
-            <p className="text-sm text-neutral-400">
-              Booking is temporarily unavailable for this mentor.
-            </p>
-          )}
+          <CalendlyButton url={hasCalendly ? profile.calendly_url : undefined} />
 
           {feedbackUrl && (
             <a
@@ -162,7 +150,7 @@ export default async function MentorProfilePage({ params }: Props) {
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center rounded-xl border border-neutral-200 bg-white px-5 py-2.5 text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition-colors"
             >
-              Submit session feedback
+              Gửi phản hồi buổi mentoring
             </a>
           )}
         </div>
@@ -171,7 +159,7 @@ export default async function MentorProfilePage({ params }: Props) {
           href="/mentors"
           className="inline-block text-sm text-neutral-400 hover:text-neutral-600 transition-colors"
         >
-          ← Back to mentors
+          ← Quay lại danh sách mentor
         </Link>
       </main>
     </>

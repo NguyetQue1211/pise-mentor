@@ -51,7 +51,7 @@ export default function AdminMentorEditLoading() {
         {/* Action buttons */}
         <div className="flex gap-3">
           <div className="h-10 w-32 bg-primary-200 rounded-xl" />
-          <div className="h-10 w-24 bg-secondary-100 rounded-xl" />
+          <div className="h-10 w-24 bg-primary-100 rounded-xl" />
         </div>
       </main>
     </>

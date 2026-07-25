@@ -9,10 +9,10 @@ export default function AccessDeniedPage() {
         </p>
 
         <div className="space-y-3">
-          <h1 className="text-2xl font-bold text-neutral-900">Access denied</h1>
+          <h1 className="text-2xl font-bold text-neutral-900">Truy cập bị từ chối</h1>
           <p className="text-sm text-neutral-600 leading-relaxed">
-            This portal is currently available only for approved PISE mentors and mentees.
-            If you believe you should have access, please contact the PISE team.
+            Portal này hiện chỉ dành cho mentor và mentee PISE đã được phê duyệt.
+            Nếu bạn cho rằng mình nên có quyền truy cập, vui lòng liên hệ đội ngũ PISE.
           </p>
         </div>
 
@@ -20,7 +20,7 @@ export default function AccessDeniedPage() {
           href="/login"
           className="inline-flex items-center justify-center w-full rounded-lg border border-neutral-300 px-4 py-2.5 text-sm font-medium text-neutral-700 hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-colors"
         >
-          Back to login
+          Quay lại đăng nhập
         </Link>
       </div>
     </main>

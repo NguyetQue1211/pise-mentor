@@ -14,24 +14,24 @@ export default function GlobalError({
         </p>
 
         <div className="space-y-3">
-          <h1 className="text-2xl font-bold text-neutral-900">Something went wrong</h1>
+          <h1 className="text-2xl font-bold text-neutral-900">Đã có lỗi xảy ra</h1>
           <p className="text-sm text-neutral-600 leading-relaxed">
-            An unexpected error occurred. Please try again or go back to the home page.
+            Đã xảy ra lỗi ngoài dự kiến. Vui lòng thử lại hoặc quay về danh sách mentor.
           </p>
         </div>
 
         <div className="flex flex-col gap-2">
           <button
             onClick={reset}
-            className="inline-flex items-center justify-center rounded-xl bg-primary-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-primary-700 transition-colors"
+            className="inline-flex items-center justify-center rounded-xl bg-gradient-primary px-5 py-2.5 text-sm font-semibold text-white hover:brightness-105 transition-[filter]"
           >
-            Try again
+            Thử lại
           </button>
           <a
-            href="/home"
+            href="/mentors"
             className="inline-flex items-center justify-center rounded-xl border border-neutral-200 bg-white px-5 py-2.5 text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition-colors"
           >
-            Go home
+            Xem danh sách mentor
           </a>
         </div>
       </div>

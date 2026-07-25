@@ -72,9 +72,9 @@ export default function MentorBrowser({ mentors, filterOptions }: MentorBrowserP
     return (
       <div className="flex flex-col items-center justify-center py-24 text-center">
         <p className="text-base font-medium text-neutral-700">
-          No mentors are available yet.
+          Hiện chưa có mentor nào.
         </p>
-        <p className="text-sm text-neutral-500 mt-1">Please check back later.</p>
+        <p className="text-sm text-neutral-500 mt-1">Vui lòng quay lại sau.</p>
       </div>
     )
   }
@@ -82,38 +82,39 @@ export default function MentorBrowser({ mentors, filterOptions }: MentorBrowserP
   return (
     <div className="flex flex-col gap-8 lg:flex-row lg:items-start">
       {/* Filters */}
-      <aside className="lg:w-60 xl:w-64 shrink-0 space-y-6">
-        <div className="flex items-center justify-between">
-          <p className="text-sm font-semibold text-neutral-700">Filters</p>
-          {hasFilters && (
-            <button
-              type="button"
-              onClick={clearFilters}
-              className="text-xs font-medium text-primary-600 hover:text-primary-700 transition-colors"
-            >
-              Clear all
-            </button>
-          )}
+      <aside className="lg:w-64 xl:w-72 shrink-0 space-y-3">
+        <h2 className="text-lg font-bold text-neutral-900">Bộ lọc</h2>
+
+        <div className="rounded-2xl border border-neutral-200 bg-white">
+          <FilterGroup
+            label="Địa điểm"
+            options={filterOptions.locations}
+            selected={selectedLocations}
+            onChange={(slug) => setSelectedLocations(toggleSlug(slug, selectedLocations))}
+          />
+          <FilterGroup
+            label="Lĩnh vực"
+            options={filterOptions.disciplines}
+            selected={selectedDisciplines}
+            onChange={(slug) => setSelectedDisciplines(toggleSlug(slug, selectedDisciplines))}
+          />
+          <FilterGroup
+            label="Ngành nghề"
+            options={filterOptions.industries}
+            selected={selectedIndustries}
+            onChange={(slug) => setSelectedIndustries(toggleSlug(slug, selectedIndustries))}
+          />
         </div>
 
-        <FilterGroup
-          label="Location"
-          options={filterOptions.locations}
-          selected={selectedLocations}
-          onChange={(slug) => setSelectedLocations(toggleSlug(slug, selectedLocations))}
-        />
-        <FilterGroup
-          label="Discipline"
-          options={filterOptions.disciplines}
-          selected={selectedDisciplines}
-          onChange={(slug) => setSelectedDisciplines(toggleSlug(slug, selectedDisciplines))}
-        />
-        <FilterGroup
-          label="Industry"
-          options={filterOptions.industries}
-          selected={selectedIndustries}
-          onChange={(slug) => setSelectedIndustries(toggleSlug(slug, selectedIndustries))}
-        />
+        {hasFilters && (
+          <button
+            type="button"
+            onClick={clearFilters}
+            className="w-full h-11 inline-flex items-center justify-center rounded-xl border border-neutral-200 bg-white px-4 text-sm font-medium text-neutral-600 hover:bg-neutral-50 transition-colors"
+          >
+            Xoá tất cả
+          </button>
+        )}
       </aside>
 
       {/* Mentor grid */}
@@ -121,17 +122,17 @@ export default function MentorBrowser({ mentors, filterOptions }: MentorBrowserP
         {filteredMentors.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 text-center">
             <p className="text-base font-medium text-neutral-700">
-              No mentors match your current filters.
+              Không có mentor nào phù hợp với bộ lọc hiện tại.
             </p>
             <p className="text-sm text-neutral-500 mt-1">
-              Try removing one filter or browsing all mentors.
+              Hãy thử bỏ bớt một bộ lọc hoặc xem tất cả mentor.
             </p>
             <button
               type="button"
               onClick={clearFilters}
-              className="mt-4 inline-flex items-center justify-center rounded-xl border border-neutral-200 bg-white px-4 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition-colors"
+              className="mt-4 h-11 inline-flex items-center justify-center rounded-xl border border-neutral-200 bg-white px-4 text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition-colors"
             >
-              Clear filters
+              Xoá bộ lọc
             </button>
           </div>
         ) : (

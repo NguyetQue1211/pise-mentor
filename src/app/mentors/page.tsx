@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import AppHeader from '@/components/AppHeader'
+import BookingStepsAccordion from '@/components/BookingStepsAccordion'
 import MentorBrowser from './MentorBrowser'
 import { getCurrentUser } from '@/lib/auth/getCurrentUser'
 import { createClient } from '@/lib/supabase/server'
@@ -56,12 +57,26 @@ export default async function MentorsPage() {
     <>
       <AppHeader role={user.role} userName={user.name ?? user.email} />
       <main className="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-10 space-y-8">
-        <div className="space-y-2">
-          <h1 className="text-3xl font-bold text-neutral-900">Find a mentor</h1>
-          <p className="text-sm text-neutral-500 leading-relaxed">
-            Browse mentors by location, discipline, and industry. Open a profile to learn what
-            each mentor can help with before booking.
-          </p>
+        <div className="space-y-10">
+          <div className="space-y-2">
+            <h1 className="text-3xl font-bold text-neutral-900">Hãy kết nối và trò chuyện cùng PISE mentor</h1>
+            <p className="text-sm text-neutral-600 leading-relaxed max-w-2xl">
+              Đôi khi, một cuộc trò chuyện đúng người, đúng thời điểm có thể tạo nên sự khác
+              biệt. Khám phá hồ sơ các Expert Mentors đang đồng hành cùng PISE — những anh/chị
+              sẵn sàng lắng nghe, chia sẻ và cùng bạn tìm hướng đi cho những câu hỏi, thử thách
+              trên hành trình phát triển bản thân.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+            <h2 className="text-2xl sm:text-3xl font-bold text-neutral-900 leading-tight">
+              Chưa biết bắt đầu từ đâu?
+              <br />
+              Chỉ cần 3 bước đơn giản!
+            </h2>
+
+            <BookingStepsAccordion />
+          </div>
         </div>
 
         <MentorBrowser mentors={mentors} filterOptions={filterOptions} />

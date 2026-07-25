@@ -8,24 +8,24 @@ import { getProfileStatus, type MentorProfileForStatus } from '@/lib/mentor/getP
 
 function linkedBadge(userId: string | null) {
   return userId ? (
-    <span className="inline-flex items-center rounded-full bg-secondary-50 border border-secondary-100 px-2 py-0.5 text-[10px] font-semibold text-secondary-700">
-      Linked
+    <span className="inline-flex items-center rounded-full bg-success-50 border border-success-100 px-2 py-0.5 text-[10px] font-semibold text-success-700">
+      Đã liên kết
     </span>
   ) : (
     <span className="inline-flex items-center rounded-full bg-neutral-50 border border-neutral-200 px-2 py-0.5 text-[10px] font-medium text-neutral-400">
-      Not linked
+      Chưa liên kết
     </span>
   )
 }
 
 function completeBadge(isComplete: boolean) {
   return isComplete ? (
-    <span className="inline-flex items-center rounded-full bg-secondary-50 border border-secondary-100 px-2 py-0.5 text-[10px] font-semibold text-secondary-700">
-      Complete
+    <span className="inline-flex items-center rounded-full bg-success-50 border border-success-100 px-2 py-0.5 text-[10px] font-semibold text-success-700">
+      Đầy đủ
     </span>
   ) : (
     <span className="inline-flex items-center rounded-full bg-warning-50 border border-warning-100 px-2 py-0.5 text-[10px] font-semibold text-warning-700">
-      Incomplete
+      Chưa đầy đủ
     </span>
   )
 }
@@ -34,41 +34,41 @@ function calendlyBadge(url: string | null) {
   if (!url) {
     return (
       <span className="inline-flex items-center rounded-full bg-neutral-50 border border-neutral-200 px-2 py-0.5 text-[10px] font-medium text-neutral-400">
-        Missing
+        Thiếu link
       </span>
     )
   }
   if (!url.startsWith('https://')) {
     return (
       <span className="inline-flex items-center rounded-full bg-red-50 border border-red-100 px-2 py-0.5 text-[10px] font-semibold text-red-600">
-        Invalid
+        Không hợp lệ
       </span>
     )
   }
   if (!url.includes('calendly.com')) {
     return (
       <span className="inline-flex items-center rounded-full bg-warning-50 border border-warning-100 px-2 py-0.5 text-[10px] font-semibold text-warning-700">
-        Check link
+        Cần kiểm tra link
       </span>
     )
   }
   return (
-    <span className="inline-flex items-center rounded-full bg-secondary-50 border border-secondary-100 px-2 py-0.5 text-[10px] font-semibold text-secondary-700">
-      Valid link
+    <span className="inline-flex items-center rounded-full bg-success-50 border border-success-100 px-2 py-0.5 text-[10px] font-semibold text-success-700">
+      Link hợp lệ
     </span>
   )
 }
 
 function publishedBadge(isPublished: boolean) {
   return isPublished ? (
-    <span className="inline-flex items-center gap-1 rounded-full bg-secondary-50 border border-secondary-100 px-2 py-0.5 text-[10px] font-semibold text-secondary-700">
-      <span className="w-1.5 h-1.5 rounded-full bg-secondary-500 inline-block" />
-      Published
+    <span className="inline-flex items-center gap-1 rounded-full bg-success-50 border border-success-100 px-2 py-0.5 text-[10px] font-semibold text-success-700">
+      <span className="w-1.5 h-1.5 rounded-full bg-success-500 inline-block" />
+      Đã công khai
     </span>
   ) : (
     <span className="inline-flex items-center gap-1 rounded-full bg-warning-50 border border-warning-100 px-2 py-0.5 text-[10px] font-semibold text-warning-700">
       <span className="w-1.5 h-1.5 rounded-full bg-warning-500 inline-block" />
-      Unpublished
+      Chưa công khai
     </span>
   )
 }
@@ -110,29 +110,29 @@ export default async function AdminMentorsPage() {
         <div className="flex items-start justify-between gap-4">
           <div className="space-y-1">
             <p className="text-xs font-semibold text-primary-600 uppercase tracking-widest">Admin</p>
-            <h1 className="text-2xl font-bold text-neutral-900">Mentor management</h1>
+            <h1 className="text-2xl font-bold text-neutral-900">Quản lý mentor</h1>
           </div>
           <Link
             href="/admin/mentors/new"
-            className="shrink-0 inline-flex items-center justify-center rounded-xl bg-primary-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-primary-700 transition-colors"
+            className="shrink-0 inline-flex items-center justify-center rounded-xl bg-gradient-primary px-5 py-2.5 text-sm font-semibold text-white hover:brightness-105 transition-[filter]"
           >
-            Create mentor profile
+            Tạo hồ sơ mentor
           </Link>
         </div>
 
         {rows.length === 0 ? (
           <div className="rounded-2xl border border-neutral-200 bg-white px-6 py-12 text-center space-y-3">
             <p className="text-sm font-medium text-neutral-900">
-              No mentor profiles have been created yet.
+              Chưa có hồ sơ mentor nào được tạo.
             </p>
             <p className="text-sm text-neutral-400">
-              Create the first mentor profile to get started.
+              Tạo hồ sơ mentor đầu tiên để bắt đầu.
             </p>
             <Link
               href="/admin/mentors/new"
-              className="inline-flex items-center justify-center rounded-xl bg-primary-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-primary-700 transition-colors mt-2"
+              className="inline-flex items-center justify-center rounded-xl bg-gradient-primary px-5 py-2.5 text-sm font-semibold text-white hover:brightness-105 transition-[filter] mt-2"
             >
-              Create mentor profile
+              Tạo hồ sơ mentor
             </Link>
           </div>
         ) : (
@@ -144,22 +144,22 @@ export default async function AdminMentorsPage() {
                     Mentor
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-400 uppercase tracking-wide hidden sm:table-cell">
-                    Linked
+                    Liên kết
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-400 uppercase tracking-wide hidden md:table-cell">
-                    Status
+                    Trạng thái
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-400 uppercase tracking-wide hidden md:table-cell">
                     Calendly
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-400 uppercase tracking-wide">
-                    Published
+                    Công khai
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-neutral-400 uppercase tracking-wide hidden lg:table-cell">
-                    Updated
+                    Cập nhật
                   </th>
                   <th className="px-4 py-3 text-right text-xs font-semibold text-neutral-400 uppercase tracking-wide">
-                    Actions
+                    Thao tác
                   </th>
                 </tr>
               </thead>
@@ -203,7 +203,7 @@ export default async function AdminMentorsPage() {
                           href={`/admin/mentors/${m.id}/edit`}
                           className="inline-flex items-center rounded-lg border border-neutral-200 px-3 py-1.5 text-xs font-semibold text-neutral-700 hover:bg-neutral-50 transition-colors"
                         >
-                          Edit
+                          Sửa
                         </Link>
                         <AdminPublishToggle
                           id={m.id}

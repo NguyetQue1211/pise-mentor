@@ -7,15 +7,15 @@ import { signOut } from '@/app/actions/auth'
 type Role = 'mentee' | 'mentor' | 'admin'
 
 const roleLabel: Record<Role, string> = {
-  mentee: 'Mentee',
+  mentee: 'Học viên',
   mentor: 'Mentor',
-  admin: 'Admin',
+  admin: 'Quản trị viên',
 }
 
 const roleLinks: Record<Role, { label: string; href: string }[]> = {
   mentee: [],
-  mentor: [{ label: 'My Profile', href: '/mentor/profile' }],
-  admin: [{ label: 'Admin Panel', href: '/admin' }],
+  mentor: [{ label: 'Hồ sơ của tôi', href: '/mentor/profile' }],
+  admin: [{ label: 'Trang quản trị', href: '/admin/mentors' }],
 }
 
 interface UserMenuProps {
@@ -51,10 +51,10 @@ export default function UserMenu({ role, userName, feedbackUrl }: UserMenuProps)
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen((o) => !o)}
-        aria-label="Open user menu"
+        aria-label="Mở menu tài khoản"
         aria-expanded={open}
         aria-haspopup="true"
-        className="flex items-center justify-center w-8 h-8 rounded-full bg-primary-600 text-white text-sm font-semibold hover:bg-primary-700 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 select-none"
+        className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-primary text-white text-sm font-semibold hover:brightness-105 transition-[filter] focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 select-none"
       >
         {initial}
       </button>
@@ -95,7 +95,7 @@ export default function UserMenu({ role, userName, feedbackUrl }: UserMenuProps)
                 onClick={() => setOpen(false)}
                 className="block px-4 py-2.5 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors"
               >
-                Submit feedback
+                Gửi phản hồi
               </a>
             </div>
           )}
@@ -106,7 +106,7 @@ export default function UserMenu({ role, userName, feedbackUrl }: UserMenuProps)
               type="submit"
               className="w-full text-left px-4 py-2.5 text-sm text-neutral-500 hover:bg-neutral-50 hover:text-neutral-700 transition-colors"
             >
-              Sign out
+              Đăng xuất
             </button>
           </form>
         </div>

@@ -9,24 +9,18 @@ export default function NotFound() {
         </p>
 
         <div className="space-y-3">
-          <h1 className="text-2xl font-bold text-neutral-900">Page not found</h1>
+          <h1 className="text-2xl font-bold text-neutral-900">Không tìm thấy trang</h1>
           <p className="text-sm text-neutral-600 leading-relaxed">
-            The page you are looking for does not exist or may have been removed.
+            Trang bạn đang tìm không tồn tại hoặc đã bị gỡ bỏ.
           </p>
         </div>
 
         <div className="flex flex-col gap-2">
           <Link
-            href="/home"
-            className="inline-flex items-center justify-center rounded-xl bg-primary-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-primary-700 transition-colors"
-          >
-            Go home
-          </Link>
-          <Link
             href="/mentors"
-            className="inline-flex items-center justify-center rounded-xl border border-neutral-200 bg-white px-5 py-2.5 text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition-colors"
+            className="inline-flex items-center justify-center rounded-xl bg-gradient-primary px-5 py-2.5 text-sm font-semibold text-white hover:brightness-105 transition-[filter]"
           >
-            Browse mentors
+            Xem danh sách mentor
           </Link>
         </div>
       </div>

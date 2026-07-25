@@ -74,5 +74,5 @@ export async function GET(request: Request) {
       .is('auth_user_id', null)
   }
 
-  return NextResponse.redirect(`${origin}/home`)
+  return NextResponse.redirect(`${origin}/mentors`)
 }

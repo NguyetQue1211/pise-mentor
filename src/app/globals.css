@@ -6,20 +6,29 @@
    ============================================================ */
 
 @theme {
-  /* Primary palette — warm orange */
-  --color-primary-50:  #FFF7ED;
-  --color-primary-100: #FFEDD5;
-  --color-primary-200: #FED7AA;
-  --color-primary-500: #F97316;
-  --color-primary-600: #EA580C;
-  --color-primary-700: #C2410C;
+  /* Primary palette — brand orange (Colors Guideline: cam đậm #fb4428 → cam sáng #fd680b) */
+  --color-primary-50:  #FFF1EA;
+  --color-primary-100: #FFDCC7;
+  --color-primary-200: #FEB999;
+  --color-primary-300: #FD9E71;
+  --color-primary-500: #FD680B;
+  --color-primary-600: #FB4428;
+  --color-primary-700: #D6341A;
 
-  /* Secondary palette — community green */
-  --color-secondary-50:  #ECFDF5;
-  --color-secondary-100: #D1FAE5;
-  --color-secondary-500: #10B981;
-  --color-secondary-600: #059669;
-  --color-secondary-700: #047857;
+  /* Secondary palette — brand blue (Colors Guideline: xanh đậm #112fcc → xanh sáng #043cfa) */
+  --color-secondary-50:  #EBEEFE;
+  --color-secondary-100: #D2D9FC;
+  --color-secondary-200: #A3AEF7;
+  --color-secondary-500: #043CFA;
+  --color-secondary-600: #112FCC;
+  --color-secondary-700: #0C2499;
+
+  /* Success palette — kept distinct from brand colors, used only for status meaning (published/complete) */
+  --color-success-50:  #ECFDF5;
+  --color-success-100: #D1FAE5;
+  --color-success-500: #10B981;
+  --color-success-600: #059669;
+  --color-success-700: #047857;
 
   /* Neutral palette — warm stone */
   --color-neutral-50:  #FAFAF9;
@@ -56,4 +65,20 @@
 body {
   background-color: #FAFAF9; /* neutral-50 */
   color: #1C1917;             /* neutral-900 */
+}
+
+/* ============================================================
+   Brand gradients — from Colors Guideline reference image
+   ============================================================ */
+
+.bg-gradient-primary {
+  background-image: linear-gradient(135deg, #FB4428 0%, #FD680B 100%);
+}
+
+.bg-gradient-secondary {
+  background-image: linear-gradient(135deg, #112FCC 0%, #043CFA 100%);
+}
+
+.bg-gradient-accent {
+  background-image: linear-gradient(90deg, #FD680B 0%, #FDDA02 50%, #FD680B 100%);
 }

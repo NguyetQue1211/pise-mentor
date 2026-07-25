@@ -85,13 +85,16 @@ Important:
 
 ## 2.5 File Storage
 
-For MVP, use:
+Use:
 
-* `photo_url` text field
+* `photo_url` text field (unchanged — still just stores a public image URL)
+* Supabase Storage bucket `mentor-photos` (public, 5MB file size limit, `image/jpeg` / `image/png` / `image/webp` only) as the source of that URL for mentor-uploaded photos
 
-Do not build image upload in MVP.
+Decision update (2026-07-25): mentor photo upload was explicitly requested and implemented. This supersedes the original MVP decision to only accept a pasted external URL. See §15.5.
 
-Mentor or admin can paste an image URL. Supabase Storage can be added later only if needed.
+Uploads go through a Server Action using the service-role admin client (same trust model as every other mentor-profile write — see §14.4). This means no `storage.objects` RLS policies are required: writes are only ever performed server-side (bypassing RLS via the service role key), and reads are public because the bucket itself is marked `public`, not because of an RLS policy.
+
+Admin-side mentor draft creation (`AdminMentorForm`) still uses a pasted URL — it was not part of this request. Extend it the same way later only if explicitly requested.
 
 ## 2.6 Deployment
 
@@ -819,6 +822,7 @@ getPublishedMentors(filters?)
 getMentorProfile(slug)
 getOwnMentorProfile()
 updateOwnMentorProfile(data)
+uploadMentorPhoto(file)
 adminCreateMentorShell(data)
 adminUpdateMentorProfile(mentor_id, data)
 adminPublishMentor(mentor_id)
@@ -901,6 +905,19 @@ This action should:
 1. Check logged-in user is admin.
 2. Set `is_published = false`.
 3. Keep mentor profile editable by mentor owner.
+
+## 15.5 uploadMentorPhoto
+
+This action should:
+
+1. Check logged-in user.
+2. Check user role is `mentor`.
+3. Validate the file server-side: MIME type in (`image/jpeg`, `image/png`, `image/webp`), size ≤ 5MB. Never trust client-side validation alone.
+4. Upload to the `mentor-photos` bucket at a deterministic path `{user_id}/avatar.{ext}` using `upsert: true` so re-uploads overwrite the previous file instead of accumulating orphaned objects.
+5. Read back the bucket's public URL for that path.
+6. Return the public URL so the client can set it as `photo_url` and include it in the next `updateOwnMentorProfile` save.
+
+Does not write to `mentor_profiles` directly — it only returns a URL. The existing `updateOwnMentorProfile` action still owns writing `photo_url` to the row, so the mentor-owned-fields rule in §15.1 stays the single source of truth.
 
 ---
 

@@ -178,7 +178,7 @@ Recommended style:
 Avoid:
 
 * dark enterprise dashboard look,
-* excessive gradients,
+* gradients outside the three defined in §6.7 (Brand Gradients),
 * heavy shadows,
 * dense tables on mentee-facing pages,
 * flashy animations,
@@ -223,46 +223,65 @@ Do not use random one-off hex values inside components unless necessary.
 
 ## 6.1 Primary Palette
 
-Primary color should feel warm, optimistic, and action-oriented.
+Source: PISE Colors Guideline reference image. Primary color is the brand orange — warm, optimistic, action-oriented.
 
 ```text
-primary.50  = #FFF7ED
-primary.100 = #FFEDD5
-primary.200 = #FED7AA
-primary.500 = #F97316
-primary.600 = #EA580C
-primary.700 = #C2410C
+primary.50  = #FFF1EA
+primary.100 = #FFDCC7
+primary.200 = #FEB999
+primary.300 = #FD9E71
+primary.500 = #FD680B
+primary.600 = #FB4428
+primary.700 = #D6341A
 ```
 
 Usage:
 
-* primary CTA buttons,
+* primary CTA buttons (as `bg-gradient-primary`, see §6.6),
 * active filter chips,
 * important highlights,
 * key action states,
-* warm section accents.
+* warm section accents,
+* mentor photo placeholders.
 
 ## 6.2 Secondary Palette
 
-Secondary color should feel grounded, growth-oriented, and community-oriented.
+Source: PISE Colors Guideline reference image. Secondary color is the brand blue — used for structural/navigation accents, not for status.
 
 ```text
-secondary.50  = #ECFDF5
-secondary.100 = #D1FAE5
-secondary.500 = #10B981
-secondary.600 = #059669
-secondary.700 = #047857
+secondary.50  = #EBEEFE
+secondary.100 = #D2D9FC
+secondary.200 = #A3AEF7
+secondary.500 = #043CFA
+secondary.600 = #112FCC
+secondary.700 = #0C2499
 ```
 
 Usage:
 
-* supportive emphasis,
+* header/nav accent bar (as `bg-gradient-secondary`, see §6.6),
+* soft decorative accents,
+* secondary tags when needed (e.g. industry tag).
+
+## 6.3 Success Palette
+
+Kept as a dedicated color, separate from the brand palette, so status meaning stays legible (green = success is a near-universal convention that a brand color swap should not break).
+
+```text
+success.50  = #ECFDF5
+success.100 = #D1FAE5
+success.500 = #10B981
+success.600 = #059669
+success.700 = #047857
+```
+
+Usage:
+
 * complete profile status,
 * published status,
-* soft community/growth accents,
-* secondary tags when needed.
+* any other affirmative/static status indicator (not buttons — CTA buttons use primary, see §6.6).
 
-## 6.3 Neutral Palette
+## 6.4 Neutral Palette
 
 Use warm neutrals instead of cold grays.
 
@@ -287,7 +306,7 @@ Usage:
 * muted UI,
 * dividers.
 
-## 6.4 Warning Palette
+## 6.5 Warning Palette
 
 Use warning colors for incomplete, unpublished, or needs-review states.
 
@@ -306,7 +325,7 @@ Usage:
 * non-standard Calendly URL warning,
 * profile needs review.
 
-## 6.5 Error Palette
+## 6.6 Error Palette
 
 Use error colors only for real errors.
 
@@ -326,6 +345,24 @@ Usage:
 * destructive actions only when necessary.
 
 Do not overuse red.
+
+## 6.7 Brand Gradients
+
+Source: PISE Colors Guideline reference image. Exactly three gradients are defined — do not introduce others.
+
+```text
+gradient.primary   = linear-gradient(135deg, primary.600 0%, primary.500 100%)   /* cam đậm → cam sáng */
+gradient.secondary = linear-gradient(135deg, secondary.600 0%, secondary.500 100%) /* xanh đậm → xanh sáng */
+gradient.accent    = linear-gradient(90deg, primary.500 0%, #FDDA02 50%, primary.500 100%) /* cam - vàng - cam */
+```
+
+Usage:
+
+* `gradient.primary` — all filled CTA buttons (submit, save, publish, book via Calendly), active filter chips, avatar circles, mentor photo placeholders. This replaces flat `primary.600` as the default filled-button background.
+* `gradient.secondary` — header/nav accent bar and other structural brand accents. Not used for buttons.
+* `gradient.accent` — reserved for rare, high-impact highlights (e.g. a hero badge). Use sparingly.
+
+Do not apply gradients to body text, small pastel tag/badge backgrounds, or status indicators (§6.3–§6.6) — those stay solid for legibility.
 
 ---
 
@@ -362,8 +399,8 @@ border.focus   = primary.600
 ## 7.4 Buttons
 
 ```text
-button.primary.bg      = primary.600
-button.primary.hover   = primary.700
+button.primary.bg      = gradient.primary
+button.primary.hover   = brightness(105%)   /* gradients don't swap to a flat hover color */
 button.primary.text    = #FFFFFF
 
 button.secondary.bg     = #FFFFFF
@@ -379,9 +416,9 @@ button.ghost.text  = neutral.700
 ## 7.5 Status
 
 ```text
-status.success.bg     = secondary.50
-status.success.text   = secondary.700
-status.success.border = secondary.100
+status.success.bg     = success.50
+status.success.text   = success.700
+status.success.border = success.100
 
 status.warning.bg     = warning.50
 status.warning.text   = warning.700
