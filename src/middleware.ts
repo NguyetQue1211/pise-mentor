@@ -76,9 +76,9 @@ export async function middleware(request: NextRequest) {
 
   const { role } = appUser
 
-  // / → redirect authenticated users to /home
+  // / → redirect authenticated users to /mentors (the default landing page)
   if (pathname === '/') {
-    return makeRedirect('/home', request, supabaseResponse)
+    return makeRedirect('/mentors', request, supabaseResponse)
   }
 
   // /admin/* → admin only

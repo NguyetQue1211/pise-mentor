@@ -29,7 +29,7 @@ export default function AdminPublishToggle({
           setLocalPublished(false)
           router.refresh()
         } else {
-          setError(result.error ?? 'Error.')
+          setError(result.error ?? 'Đã có lỗi xảy ra.')
         }
       } else {
         const result = await publishMentor(id)
@@ -37,7 +37,7 @@ export default function AdminPublishToggle({
           setLocalPublished(true)
           router.refresh()
         } else {
-          setError(result.error ?? 'Cannot publish.')
+          setError(result.error ?? 'Không thể công khai.')
         }
       }
     })
@@ -49,14 +49,14 @@ export default function AdminPublishToggle({
         type="button"
         onClick={handle}
         disabled={isPending || (!localPublished && !isComplete)}
-        title={!localPublished && !isComplete ? 'Profile must be complete before publishing' : undefined}
+        title={!localPublished && !isComplete ? 'Hồ sơ phải đầy đủ thông tin trước khi công khai' : undefined}
         className={
           localPublished
             ? 'inline-flex items-center rounded-lg border border-neutral-200 px-3 py-1.5 text-xs font-semibold text-neutral-600 hover:bg-neutral-50 disabled:opacity-40 transition-colors'
-            : 'inline-flex items-center rounded-lg bg-secondary-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-secondary-700 disabled:opacity-40 transition-colors'
+            : 'inline-flex items-center rounded-lg bg-gradient-primary px-3 py-1.5 text-xs font-semibold text-white hover:brightness-105 disabled:opacity-40 transition-[filter]'
         }
       >
-        {isPending ? '…' : localPublished ? 'Unpublish' : 'Publish'}
+        {isPending ? '…' : localPublished ? 'Ẩn hồ sơ' : 'Công khai'}
       </button>
       {error && <p className="text-[10px] text-red-600 leading-tight max-w-[140px]">{error}</p>}
     </div>

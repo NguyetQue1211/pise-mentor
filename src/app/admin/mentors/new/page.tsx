@@ -49,14 +49,14 @@ export default async function AdminMentorsNewPage() {
             href="/admin/mentors"
             className="text-xs text-neutral-400 hover:text-neutral-600 transition-colors"
           >
-            ← Back to mentor management
+            ← Quay lại quản lý mentor
           </Link>
           <p className="text-xs font-semibold text-primary-600 uppercase tracking-widest pt-2">
             Admin
           </p>
-          <h1 className="text-2xl font-bold text-neutral-900">Create mentor profile draft</h1>
+          <h1 className="text-2xl font-bold text-neutral-900">Tạo bản nháp hồ sơ mentor</h1>
           <p className="text-sm text-neutral-500">
-            Create an unpublished mentor profile draft. The mentor can complete it after logging in.
+            Tạo một bản nháp hồ sơ mentor chưa công khai. Mentor có thể hoàn thiện sau khi đăng nhập.
           </p>
         </div>
 

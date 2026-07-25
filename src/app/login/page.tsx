@@ -26,7 +26,7 @@ export default function LoginPage() {
     const trimmed = email.trim()
 
     if (!isValidEmail(trimmed)) {
-      setErrorMsg('Please enter a valid email address.')
+      setErrorMsg('Vui lòng nhập một địa chỉ email hợp lệ.')
       setStatus('error')
       return
     }
@@ -55,15 +55,15 @@ export default function LoginPage() {
         {status === 'success' ? (
           <div className="space-y-3">
             <h1 className="text-2xl font-bold text-neutral-900">
-              Check your inbox
+              Kiểm tra hộp thư của bạn
             </h1>
             <p className="text-sm text-neutral-600 leading-relaxed">
-              We sent a login link to{' '}
+              Chúng tôi đã gửi một liên kết đăng nhập tới{' '}
               <span className="font-medium text-neutral-900">{email.trim()}</span>.
-              Click the link in the email to sign in.
+              Bấm vào liên kết trong email để đăng nhập.
             </p>
             <p className="text-xs text-neutral-400">
-              No email? Check your spam folder or{' '}
+              Không thấy email? Kiểm tra thư mục spam hoặc{' '}
               <button
                 onClick={() => {
                   setStatus('idle')
@@ -71,7 +71,7 @@ export default function LoginPage() {
                 }}
                 className="underline hover:text-neutral-600 transition-colors"
               >
-                try again
+                thử lại
               </button>
               .
             </p>
@@ -80,11 +80,11 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit} noValidate className="space-y-6">
             <div className="space-y-2">
               <h1 className="text-2xl font-bold text-neutral-900">
-                Welcome to PISE Mentorship Portal
+                Chào mừng đến với PISE Mentorship Portal
               </h1>
               <p className="text-sm text-neutral-600 leading-relaxed">
-                Sign in with your approved email to explore mentors and manage
-                your mentorship journey.
+                Đăng nhập bằng email đã được phê duyệt để khám phá mentor và
+                quản lý hành trình mentorship của bạn.
               </p>
             </div>
 
@@ -97,14 +97,14 @@ export default function LoginPage() {
                 htmlFor="email"
                 className="block text-sm font-medium text-neutral-700"
               >
-                Email address
+                Địa chỉ email
               </label>
               <input
                 id="email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
+                placeholder="ban@example.com"
                 autoComplete="email"
                 inputMode="email"
                 disabled={status === 'loading'}
@@ -115,14 +115,14 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={status === 'loading'}
-              className="w-full rounded-lg bg-primary-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="w-full rounded-lg bg-gradient-primary px-4 py-2.5 text-sm font-semibold text-white hover:brightness-105 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-[filter]"
             >
-              {status === 'loading' ? 'Sending…' : 'Send login link'}
+              {status === 'loading' ? 'Đang gửi…' : 'Gửi liên kết đăng nhập'}
             </button>
 
             <p className="text-xs text-neutral-400 text-center leading-relaxed">
-              This portal is only available for approved PISE mentors, mentees,
-              and team members.
+              Portal này chỉ dành cho mentor, mentee và thành viên PISE đã được
+              phê duyệt.
             </p>
           </form>
         )}

@@ -81,7 +81,7 @@ export default async function AdminMentorEditPage({ params }: Props) {
             href="/admin/mentors"
             className="text-xs text-neutral-400 hover:text-neutral-600 transition-colors"
           >
-            ← Back to mentor management
+            ← Quay lại quản lý mentor
           </Link>
           <p className="text-xs font-semibold text-primary-600 uppercase tracking-widest pt-2">
             Admin

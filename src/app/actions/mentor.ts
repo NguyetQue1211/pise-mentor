@@ -87,3 +87,68 @@ export async function updateOwnMentorProfile(
   revalidatePath('/mentor/profile')
   return { success: true, calendlyWarning }
 }
+
+const MAX_PHOTO_SIZE = 5 * 1024 * 1024 // 5MB
+const PHOTO_EXT_BY_MIME: Record<string, string> = {
+  'image/jpeg': 'jpg',
+  'image/png': 'png',
+  'image/webp': 'webp',
+}
+
+export type UploadPhotoResult =
+  | { success: true; url: string }
+  | { success: false; error: string }
+
+export async function uploadMentorPhoto(formData: FormData): Promise<UploadPhotoResult> {
+  const user = await getCurrentUser()
+  if (!user || user.role !== 'mentor') {
+    return { success: false, error: 'Unauthorized.' }
+  }
+
+  const file = formData.get('file')
+  if (!(file instanceof File) || file.size === 0) {
+    return { success: false, error: 'No file provided.' }
+  }
+
+  const ext = PHOTO_EXT_BY_MIME[file.type]
+  if (!ext) {
+    return { success: false, error: 'Please upload a JPG, PNG, or WebP image.' }
+  }
+
+  if (file.size > MAX_PHOTO_SIZE) {
+    return { success: false, error: 'Image must be 5MB or smaller.' }
+  }
+
+  const admin = createAdminClient()
+
+  const { data: current } = await admin
+    .from('mentor_profiles')
+    .select('id')
+    .eq('user_id', user.id)
+    .maybeSingle()
+
+  if (!current) {
+    return { success: false, error: 'Mentor profile not found.' }
+  }
+
+  // Deterministic, overwritten path — avoids accumulating orphaned files
+  // in storage every time a mentor changes their photo.
+  const path = `${user.id}/avatar.${ext}`
+
+  const { error: uploadError } = await admin.storage
+    .from('mentor-photos')
+    .upload(path, file, { contentType: file.type, upsert: true })
+
+  if (uploadError) {
+    console.error('[uploadMentorPhoto] storage error:', uploadError.message)
+    return { success: false, error: 'Upload failed. Please try again.' }
+  }
+
+  const { data: publicUrlData } = admin.storage.from('mentor-photos').getPublicUrl(path)
+
+  // Cache-bust: the path is stable across re-uploads, so without this the
+  // browser/CDN would keep showing the previous cached image at that URL.
+  const url = `${publicUrlData.publicUrl}?v=${Date.now()}`
+
+  return { success: true, url }
+}

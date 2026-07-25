@@ -19,13 +19,13 @@ export type ProfileStatus = {
 export function getProfileStatus(profile: MentorProfileForStatus): ProfileStatus {
   const missingFields: string[] = []
 
-  if (!profile.role_title) missingFields.push('Current role / title')
-  if (!profile.short_bio) missingFields.push('Short bio')
-  if (!profile.location_slugs?.length) missingFields.push('Location')
-  if (!profile.discipline_slugs?.length) missingFields.push('Discipline')
-  if (!profile.industry_slugs?.length) missingFields.push('Industry')
-  if (!profile.what_i_can_help_with) missingFields.push('What I can help with')
-  if (!profile.calendly_url?.startsWith('https://')) missingFields.push('Valid Calendly URL')
+  if (!profile.role_title) missingFields.push('Chức danh / vai trò hiện tại')
+  if (!profile.short_bio) missingFields.push('Giới thiệu ngắn')
+  if (!profile.location_slugs?.length) missingFields.push('Địa điểm')
+  if (!profile.discipline_slugs?.length) missingFields.push('Lĩnh vực')
+  if (!profile.industry_slugs?.length) missingFields.push('Ngành nghề')
+  if (!profile.what_i_can_help_with) missingFields.push('Mentor có thể hỗ trợ gì')
+  if (!profile.calendly_url?.startsWith('https://')) missingFields.push('Đường dẫn Calendly hợp lệ')
 
   return {
     isPublished: profile.is_published,

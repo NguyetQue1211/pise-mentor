@@ -17,20 +17,20 @@ interface AdminStatusBadgeProps {
 type Variant = "success" | "warning" | "error" | "neutral";
 
 const statusMap: Record<AdminStatus, { label: string; variant: Variant }> = {
-  "published":     { label: "Published",     variant: "success"  },
-  "unpublished":   { label: "Unpublished",   variant: "neutral"  },
-  "complete":      { label: "Complete",      variant: "success"  },
-  "incomplete":    { label: "Incomplete",    variant: "warning"  },
-  "linked":        { label: "Linked",        variant: "success"  },
-  "not-linked":    { label: "Not linked",    variant: "neutral"  },
-  "valid-link":    { label: "Valid link",    variant: "success"  },
-  "missing-link":  { label: "Missing link",  variant: "error"    },
-  "invalid-link":  { label: "Invalid link",  variant: "error"    },
-  "check-link":    { label: "Check link",    variant: "warning"  },
+  "published":     { label: "Đã công khai",     variant: "success"  },
+  "unpublished":   { label: "Chưa công khai",   variant: "neutral"  },
+  "complete":      { label: "Đầy đủ",           variant: "success"  },
+  "incomplete":    { label: "Chưa đầy đủ",      variant: "warning"  },
+  "linked":        { label: "Đã liên kết",      variant: "success"  },
+  "not-linked":    { label: "Chưa liên kết",    variant: "neutral"  },
+  "valid-link":    { label: "Link hợp lệ",      variant: "success"  },
+  "missing-link":  { label: "Thiếu link",       variant: "error"    },
+  "invalid-link":  { label: "Link không hợp lệ", variant: "error"    },
+  "check-link":    { label: "Cần kiểm tra link", variant: "warning"  },
 };
 
 const variantClasses: Record<Variant, string> = {
-  success: "bg-secondary-50 text-secondary-700 border-secondary-100",
+  success: "bg-success-50 text-success-700 border-success-100",
   warning: "bg-warning-50 text-warning-700 border-warning-100",
   error:   "bg-error-50 text-error-700 border-error-100",
   neutral: "bg-neutral-100 text-neutral-600 border-neutral-200",
