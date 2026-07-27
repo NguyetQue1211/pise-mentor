@@ -7,6 +7,7 @@ import FilterGroup, { type FilterOption } from '@/components/FilterGroup'
 interface FilterOptions {
   locations: FilterOption[]
   industries: FilterOption[]
+  supportAreas: FilterOption[]
 }
 
 interface MentorBrowserProps {
@@ -23,21 +24,26 @@ function toggleSlug(slug: string, selected: string[]): string[] {
 export default function MentorBrowser({ mentors, filterOptions }: MentorBrowserProps) {
   const [selectedLocations, setSelectedLocations] = useState<string[]>([])
   const [selectedIndustries, setSelectedIndustries] = useState<string[]>([])
+  const [selectedSupportAreas, setSelectedSupportAreas] = useState<string[]>([])
 
   const labelMap = useMemo(() => {
     const map: Record<string, string> = {}
-    const all = [...filterOptions.locations, ...filterOptions.industries]
+    const all = [...filterOptions.locations, ...filterOptions.industries, ...filterOptions.supportAreas]
     for (const opt of all) {
       map[opt.slug] = opt.label
     }
     return map
   }, [filterOptions])
 
-  const hasFilters = selectedLocations.length > 0 || selectedIndustries.length > 0
+  const hasFilters =
+    selectedLocations.length > 0 ||
+    selectedIndustries.length > 0 ||
+    selectedSupportAreas.length > 0
 
   function clearFilters() {
     setSelectedLocations([])
     setSelectedIndustries([])
+    setSelectedSupportAreas([])
   }
 
   const filteredMentors = useMemo(() => {
@@ -50,9 +56,13 @@ export default function MentorBrowser({ mentors, filterOptions }: MentorBrowserP
         selectedIndustries.length === 0 ||
         mentor.industry_slugs.some((s) => selectedIndustries.includes(s))
 
-      return matchesLocation && matchesIndustry
+      const matchesSupportArea =
+        selectedSupportAreas.length === 0 ||
+        mentor.support_area_slugs.some((s) => selectedSupportAreas.includes(s))
+
+      return matchesLocation && matchesIndustry && matchesSupportArea
     })
-  }, [mentors, selectedLocations, selectedIndustries])
+  }, [mentors, selectedLocations, selectedIndustries, selectedSupportAreas])
 
   if (mentors.length === 0) {
     return (
@@ -83,6 +93,12 @@ export default function MentorBrowser({ mentors, filterOptions }: MentorBrowserP
             options={filterOptions.industries}
             selected={selectedIndustries}
             onChange={(slug) => setSelectedIndustries(toggleSlug(slug, selectedIndustries))}
+          />
+          <FilterGroup
+            label="Lĩnh vực hỗ trợ"
+            options={filterOptions.supportAreas}
+            selected={selectedSupportAreas}
+            onChange={(slug) => setSelectedSupportAreas(toggleSlug(slug, selectedSupportAreas))}
           />
         </div>
 
