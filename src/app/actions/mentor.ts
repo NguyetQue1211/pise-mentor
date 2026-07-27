@@ -9,7 +9,6 @@ export type UpdateProfileData = {
   role_title: string
   short_bio: string
   location_slugs: string[]
-  discipline_slugs: string[]
   industry_slugs: string[]
   support_area_slugs: string[]
   what_i_can_help_with: string
@@ -59,7 +58,6 @@ export async function updateOwnMentorProfile(
     role_title: data.role_title || null,
     short_bio: data.short_bio || null,
     location_slugs: data.location_slugs,
-    discipline_slugs: data.discipline_slugs,
     industry_slugs: data.industry_slugs,
     support_area_slugs: data.support_area_slugs,
     what_i_can_help_with: data.what_i_can_help_with || null,

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useRef, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import FilterGroup, { type FilterOption } from '@/components/FilterGroup'
 import {
@@ -8,14 +8,26 @@ import {
   updateMentorProfile,
   publishMentor,
   unpublishMentor,
+  uploadMentorPhotoAsAdmin,
   type AdminProfileData,
 } from '@/app/actions/admin'
+
+const MAX_PHOTO_SIZE = 5 * 1024 * 1024 // 5MB
+const ALLOWED_PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp']
+
+function getInitials(name: string): string {
+  return name
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0].toUpperCase())
+    .join('')
+}
 
 type MentorUser = { id: string; name: string | null; email: string }
 
 type FilterOptions = {
   locations: FilterOption[]
-  disciplines: FilterOption[]
   industries: FilterOption[]
   supportAreas: FilterOption[]
 }
@@ -41,8 +53,30 @@ function toSlug(name: string): string {
     .replace(/^-|-$/g, '')
 }
 
-const inputClass =
-  'w-full rounded-xl border border-neutral-200 bg-white px-3 py-2 text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors'
+function fieldClass(isEditing: boolean) {
+  return isEditing
+    ? 'w-full rounded-xl border border-neutral-200 bg-white px-3 py-2 text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors'
+    : 'w-full rounded-xl border border-transparent bg-transparent px-3 py-2 -mx-3 text-sm text-neutral-700 disabled:cursor-default'
+}
+
+function buildFormFromProfile(profile: ProfileInit | undefined): AdminProfileData {
+  return {
+    name: profile?.name ?? '',
+    slug: profile?.slug ?? '',
+    user_id: profile?.user_id ?? '',
+    photo_url: profile?.photo_url ?? '',
+    role_title: profile?.role_title ?? '',
+    short_bio: profile?.short_bio ?? '',
+    location_slugs: profile?.location_slugs ?? [],
+    industry_slugs: profile?.industry_slugs ?? [],
+    support_area_slugs: profile?.support_area_slugs ?? [],
+    what_i_can_help_with: profile?.what_i_can_help_with ?? '',
+    suitable_mentee_profile: profile?.suitable_mentee_profile ?? '',
+    suggested_topics: profile?.suggested_topics ?? '',
+    booking_instruction: profile?.booking_instruction ?? '',
+    calendly_url: profile?.calendly_url ?? '',
+  }
+}
 
 function Field({
   label,
@@ -76,23 +110,8 @@ export default function AdminMentorForm({
   const router = useRouter()
   const profileId = profile?.id
 
-  const [form, setForm] = useState<AdminProfileData>({
-    name: profile?.name ?? '',
-    slug: profile?.slug ?? '',
-    user_id: profile?.user_id ?? '',
-    photo_url: profile?.photo_url ?? '',
-    role_title: profile?.role_title ?? '',
-    short_bio: profile?.short_bio ?? '',
-    location_slugs: profile?.location_slugs ?? [],
-    discipline_slugs: profile?.discipline_slugs ?? [],
-    industry_slugs: profile?.industry_slugs ?? [],
-    support_area_slugs: profile?.support_area_slugs ?? [],
-    what_i_can_help_with: profile?.what_i_can_help_with ?? '',
-    suitable_mentee_profile: profile?.suitable_mentee_profile ?? '',
-    suggested_topics: profile?.suggested_topics ?? '',
-    booking_instruction: profile?.booking_instruction ?? '',
-    calendly_url: profile?.calendly_url ?? '',
-  })
+  const [form, setForm] = useState<AdminProfileData>(() => buildFormFromProfile(profile))
+  const [isEditing, setIsEditing] = useState(mode === 'create')
 
   const [slugEdited, setSlugEdited] = useState(mode === 'edit')
   const [saveStatus, setSaveStatus] = useState<'idle' | 'success' | 'error'>('idle')
@@ -108,6 +127,62 @@ export default function AdminMentorForm({
   const [isSaving, startSave] = useTransition()
   const [isPublishing, startPublish] = useTransition()
   const [isUnpublishing, startUnpublish] = useTransition()
+
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false)
+  const [photoError, setPhotoError] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const inputClass = fieldClass(isEditing)
+
+  function handleEdit() {
+    setIsEditing(true)
+    setSaveStatus('idle')
+    setSaveMessage(null)
+  }
+
+  function handleCancel() {
+    setForm(buildFormFromProfile(profile))
+    setIsEditing(false)
+    setSaveStatus('idle')
+    setSaveMessage(null)
+    setPhotoError(null)
+  }
+
+  function handlePhotoButtonClick() {
+    fileInputRef.current?.click()
+  }
+
+  async function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    e.target.value = '' // allow re-selecting the same file again later
+    if (!file) return
+
+    if (!ALLOWED_PHOTO_TYPES.includes(file.type)) {
+      setPhotoError('Vui lòng chọn ảnh JPG, PNG hoặc WebP.')
+      return
+    }
+    if (file.size > MAX_PHOTO_SIZE) {
+      setPhotoError('Ảnh phải nhỏ hơn hoặc bằng 5MB.')
+      return
+    }
+
+    setPhotoError(null)
+    setIsUploadingPhoto(true)
+
+    const uploadData = new FormData()
+    uploadData.append('file', file)
+
+    const result = await uploadMentorPhotoAsAdmin(uploadData, form.user_id)
+
+    setIsUploadingPhoto(false)
+
+    if (result.success) {
+      setForm((prev) => ({ ...prev, photo_url: result.url }))
+      setSaveStatus('idle')
+    } else {
+      setPhotoError(result.error)
+    }
+  }
 
   function set(field: keyof AdminProfileData, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }))
@@ -129,7 +204,7 @@ export default function AdminMentorForm({
   }
 
   function toggle(
-    field: 'location_slugs' | 'discipline_slugs' | 'industry_slugs' | 'support_area_slugs',
+    field: 'location_slugs' | 'industry_slugs' | 'support_area_slugs',
     slug: string
   ) {
     setForm((prev) => {
@@ -161,6 +236,7 @@ export default function AdminMentorForm({
           setSaveStatus('success')
           setSaveMessage('Đã lưu thay đổi.')
           setSaveCalendlyWarning(result.calendlyWarning ?? false)
+          setIsEditing(false)
           router.refresh()
         } else {
           setSaveStatus('error')
@@ -205,7 +281,20 @@ export default function AdminMentorForm({
   const isAnyPending = isSaving || isPublishing || isUnpublishing
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-8">
+      {/* Top action bar */}
+      {mode === 'edit' && !isEditing && (
+        <div className="flex justify-end">
+          <button
+            type="button"
+            onClick={handleEdit}
+            className="inline-flex items-center justify-center rounded-xl bg-gradient-primary px-5 py-2.5 text-sm font-semibold text-white hover:brightness-105 transition-[filter]"
+          >
+            Chỉnh sửa hồ sơ mentor
+          </button>
+        </div>
+      )}
+
       {/* Section: Admin / Linkage */}
       <div className="rounded-2xl border border-neutral-200 bg-white px-6 py-6 space-y-5">
         <h2 className="text-xs font-semibold text-neutral-400 uppercase tracking-widest">
@@ -220,6 +309,7 @@ export default function AdminMentorForm({
             placeholder="VD: Nguyễn Thị A"
             className={inputClass}
             maxLength={200}
+            disabled={!isEditing}
           />
         </Field>
 
@@ -235,6 +325,7 @@ export default function AdminMentorForm({
             placeholder="VD: nguyen-thi-a"
             className={`${inputClass} font-mono`}
             maxLength={100}
+            disabled={!isEditing}
           />
           {form.slug && (
             <p className="text-xs text-neutral-400 mt-0.5">
@@ -251,6 +342,7 @@ export default function AdminMentorForm({
             value={form.user_id}
             onChange={(e) => set('user_id', e.target.value)}
             className={inputClass}
+            disabled={!isEditing}
           >
             <option value="">— Chưa liên kết —</option>
             {mentorUsers.map((u) => (
@@ -285,15 +377,57 @@ export default function AdminMentorForm({
           Thông tin cơ bản
         </h2>
 
-        <Field label="Đường dẫn ảnh" hint="Liên kết tới một ảnh có thể truy cập công khai.">
-          <input
-            type="url"
-            value={form.photo_url}
-            onChange={(e) => set('photo_url', e.target.value)}
-            placeholder="https://i.imgur.com/..."
-            className={inputClass}
-          />
-        </Field>
+        <div className="space-y-1.5">
+          <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide">
+            Ảnh đại diện
+          </p>
+          <div className="flex items-center gap-4">
+            <div className="relative shrink-0 h-20 w-20 rounded-2xl overflow-hidden bg-gradient-primary flex items-center justify-center">
+              {form.photo_url ? (
+                <img
+                  src={form.photo_url}
+                  alt={form.name || 'Mentor'}
+                  className="h-full w-full object-cover object-top"
+                />
+              ) : (
+                <span className="text-xl font-bold text-white/80">
+                  {form.name ? getInitials(form.name) : '?'}
+                </span>
+              )}
+
+              {isUploadingPhoto && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+                  <span className="h-5 w-5 rounded-full border-2 border-white/40 border-t-white animate-spin" />
+                </div>
+              )}
+            </div>
+
+            <div className="space-y-1.5">
+              {isEditing && (
+                <>
+                  <button
+                    type="button"
+                    onClick={handlePhotoButtonClick}
+                    disabled={isUploadingPhoto}
+                    className="inline-flex items-center justify-center rounded-lg border border-neutral-200 bg-white px-3.5 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50 disabled:opacity-50 transition-colors"
+                  >
+                    {isUploadingPhoto ? 'Đang tải lên…' : form.photo_url ? 'Đổi ảnh' : 'Tải ảnh lên'}
+                  </button>
+                  <p className="text-xs text-neutral-400">JPG, PNG hoặc WebP. Tối đa 5MB.</p>
+                  {photoError && <p className="text-xs text-red-600">{photoError}</p>}
+                </>
+              )}
+            </div>
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              onChange={handlePhotoChange}
+              className="hidden"
+            />
+          </div>
+        </div>
 
         <Field label="Chức danh / vai trò hiện tại">
           <input
@@ -303,6 +437,7 @@ export default function AdminMentorForm({
             placeholder="VD: Senior Product Designer tại Shopify"
             className={inputClass}
             maxLength={200}
+            disabled={!isEditing}
           />
         </Field>
 
@@ -314,6 +449,7 @@ export default function AdminMentorForm({
             rows={3}
             maxLength={500}
             className={`${inputClass} resize-none`}
+            disabled={!isEditing}
           />
         </Field>
       </div>
@@ -329,20 +465,15 @@ export default function AdminMentorForm({
           options={filterOptions.locations}
           selected={form.location_slugs}
           onChange={(slug) => toggle('location_slugs', slug)}
+          disabled={!isEditing}
         />
 
         <FilterGroup
-          label="Lĩnh vực"
-          options={filterOptions.disciplines}
-          selected={form.discipline_slugs}
-          onChange={(slug) => toggle('discipline_slugs', slug)}
-        />
-
-        <FilterGroup
-          label="Ngành nghề"
+          label="Chuyên môn"
           options={filterOptions.industries}
           selected={form.industry_slugs}
           onChange={(slug) => toggle('industry_slugs', slug)}
+          disabled={!isEditing}
         />
 
         <FilterGroup
@@ -350,6 +481,7 @@ export default function AdminMentorForm({
           options={filterOptions.supportAreas}
           selected={form.support_area_slugs}
           onChange={(slug) => toggle('support_area_slugs', slug)}
+          disabled={!isEditing}
         />
       </div>
 
@@ -366,6 +498,7 @@ export default function AdminMentorForm({
             placeholder="Mô tả những lĩnh vực mentor này có thể hỗ trợ mentee..."
             rows={4}
             className={`${inputClass} resize-none`}
+            disabled={!isEditing}
           />
         </Field>
 
@@ -376,6 +509,7 @@ export default function AdminMentorForm({
             placeholder="Mô tả kiểu mentee sẽ được hưởng lợi nhiều nhất..."
             rows={3}
             className={`${inputClass} resize-none`}
+            disabled={!isEditing}
           />
         </Field>
 
@@ -386,6 +520,7 @@ export default function AdminMentorForm({
             placeholder="VD: Xem portfolio, Chiến lược chuyển ngành, Luyện phỏng vấn..."
             rows={3}
             className={`${inputClass} resize-none`}
+            disabled={!isEditing}
           />
         </Field>
       </div>
@@ -403,6 +538,7 @@ export default function AdminMentorForm({
             onChange={(e) => set('calendly_url', e.target.value)}
             placeholder="https://calendly.com/..."
             className={inputClass}
+            disabled={!isEditing}
           />
         </Field>
 
@@ -413,6 +549,7 @@ export default function AdminMentorForm({
             placeholder="Hướng dẫn thêm cho mentee trước khi đặt lịch (không bắt buộc)..."
             rows={3}
             className={`${inputClass} resize-none`}
+            disabled={!isEditing}
           />
         </Field>
       </div>
@@ -420,6 +557,7 @@ export default function AdminMentorForm({
       {/* Footer actions */}
       <div className="space-y-4">
         {/* Save row */}
+        {isEditing && (
         <div className="flex flex-wrap items-center gap-3">
           <button
             type="submit"
@@ -428,6 +566,17 @@ export default function AdminMentorForm({
           >
             {isSaving ? 'Đang lưu…' : mode === 'create' ? 'Tạo bản nháp' : 'Lưu thay đổi'}
           </button>
+
+          {mode === 'edit' && (
+            <button
+              type="button"
+              onClick={handleCancel}
+              disabled={isAnyPending}
+              className="inline-flex items-center justify-center rounded-xl border border-neutral-200 bg-white px-5 py-2.5 text-sm font-medium text-neutral-700 hover:bg-neutral-50 disabled:opacity-50 transition-colors"
+            >
+              Hủy
+            </button>
+          )}
 
           {saveStatus === 'success' && (
             <div>
@@ -443,6 +592,7 @@ export default function AdminMentorForm({
             <p className="text-sm text-red-600">{saveMessage}</p>
           )}
         </div>
+        )}
 
         {/* Publish/Unpublish row (edit mode only) */}
         {mode === 'edit' && (

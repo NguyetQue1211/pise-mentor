@@ -6,7 +6,6 @@ import FilterGroup, { type FilterOption } from '@/components/FilterGroup'
 
 interface FilterOptions {
   locations: FilterOption[]
-  disciplines: FilterOption[]
   industries: FilterOption[]
 }
 
@@ -23,30 +22,21 @@ function toggleSlug(slug: string, selected: string[]): string[] {
 
 export default function MentorBrowser({ mentors, filterOptions }: MentorBrowserProps) {
   const [selectedLocations, setSelectedLocations] = useState<string[]>([])
-  const [selectedDisciplines, setSelectedDisciplines] = useState<string[]>([])
   const [selectedIndustries, setSelectedIndustries] = useState<string[]>([])
 
   const labelMap = useMemo(() => {
     const map: Record<string, string> = {}
-    const all = [
-      ...filterOptions.locations,
-      ...filterOptions.disciplines,
-      ...filterOptions.industries,
-    ]
+    const all = [...filterOptions.locations, ...filterOptions.industries]
     for (const opt of all) {
       map[opt.slug] = opt.label
     }
     return map
   }, [filterOptions])
 
-  const hasFilters =
-    selectedLocations.length > 0 ||
-    selectedDisciplines.length > 0 ||
-    selectedIndustries.length > 0
+  const hasFilters = selectedLocations.length > 0 || selectedIndustries.length > 0
 
   function clearFilters() {
     setSelectedLocations([])
-    setSelectedDisciplines([])
     setSelectedIndustries([])
   }
 
@@ -56,17 +46,13 @@ export default function MentorBrowser({ mentors, filterOptions }: MentorBrowserP
         selectedLocations.length === 0 ||
         mentor.location_slugs.some((s) => selectedLocations.includes(s))
 
-      const matchesDiscipline =
-        selectedDisciplines.length === 0 ||
-        mentor.discipline_slugs.some((s) => selectedDisciplines.includes(s))
-
       const matchesIndustry =
         selectedIndustries.length === 0 ||
         mentor.industry_slugs.some((s) => selectedIndustries.includes(s))
 
-      return matchesLocation && matchesDiscipline && matchesIndustry
+      return matchesLocation && matchesIndustry
     })
-  }, [mentors, selectedLocations, selectedDisciplines, selectedIndustries])
+  }, [mentors, selectedLocations, selectedIndustries])
 
   if (mentors.length === 0) {
     return (
@@ -93,13 +79,7 @@ export default function MentorBrowser({ mentors, filterOptions }: MentorBrowserP
             onChange={(slug) => setSelectedLocations(toggleSlug(slug, selectedLocations))}
           />
           <FilterGroup
-            label="Lĩnh vực"
-            options={filterOptions.disciplines}
-            selected={selectedDisciplines}
-            onChange={(slug) => setSelectedDisciplines(toggleSlug(slug, selectedDisciplines))}
-          />
-          <FilterGroup
-            label="Ngành nghề"
+            label="Chuyên môn"
             options={filterOptions.industries}
             selected={selectedIndustries}
             onChange={(slug) => setSelectedIndustries(toggleSlug(slug, selectedIndustries))}

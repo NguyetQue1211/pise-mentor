@@ -8,7 +8,6 @@ export type MentorCardData = {
   role_title: string | null
   short_bio: string | null
   location_slugs: string[]
-  discipline_slugs: string[]
   industry_slugs: string[]
   support_area_slugs: string[]
 }
@@ -70,7 +69,6 @@ function MapPinIcon() {
 
 export default function MentorCard({ mentor, labelMap }: MentorCardProps) {
   const label = (slug: string) => labelMap[slug] ?? slug
-  const disciplineLabel = mentor.discipline_slugs[0] ? label(mentor.discipline_slugs[0]) : null
   const industryLabel = mentor.industry_slugs[0] ? label(mentor.industry_slugs[0]) : null
   const locationText = mentor.location_slugs.map(label).join(' · ')
 
@@ -116,20 +114,10 @@ export default function MentorCard({ mentor, labelMap }: MentorCardProps) {
           </div>
         )}
 
-        {(disciplineLabel || industryLabel) && (
-          <div className="grid grid-cols-2 gap-2 rounded-xl bg-neutral-50 px-3 py-2 mt-1">
-            <div className="min-w-0">
-              <p className="text-[11px] text-neutral-400">Lĩnh vực</p>
-              <p className="text-xs font-semibold text-neutral-800 truncate">
-                {disciplineLabel ?? '—'}
-              </p>
-            </div>
-            <div className="min-w-0">
-              <p className="text-[11px] text-neutral-400">Ngành nghề</p>
-              <p className="text-xs font-semibold text-neutral-800 truncate">
-                {industryLabel ?? '—'}
-              </p>
-            </div>
+        {industryLabel && (
+          <div className="rounded-xl bg-neutral-50 px-3 py-2 mt-1">
+            <p className="text-[11px] text-neutral-400">Chuyên môn</p>
+            <p className="text-xs font-semibold text-neutral-800 truncate">{industryLabel}</p>
           </div>
         )}
       </div>

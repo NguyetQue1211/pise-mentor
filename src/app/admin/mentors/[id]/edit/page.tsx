@@ -25,7 +25,7 @@ export default async function AdminMentorEditPage({ params }: Props) {
       .from('mentor_profiles')
       .select(`
         id, name, slug, photo_url, role_title, short_bio,
-        location_slugs, discipline_slugs, industry_slugs, support_area_slugs,
+        location_slugs, industry_slugs, support_area_slugs,
         what_i_can_help_with, suitable_mentee_profile, suggested_topics,
         booking_instruction, calendly_url, user_id, is_published
       `)
@@ -49,7 +49,6 @@ export default async function AdminMentorEditPage({ params }: Props) {
   const rows = filterRows ?? []
   const filterOptions = {
     locations: rows.filter((r) => r.type === 'location').map((r) => ({ slug: r.slug, label: r.label })),
-    disciplines: rows.filter((r) => r.type === 'discipline').map((r) => ({ slug: r.slug, label: r.label })),
     industries: rows.filter((r) => r.type === 'industry').map((r) => ({ slug: r.slug, label: r.label })),
     supportAreas: rows.filter((r) => r.type === 'support_area').map((r) => ({ slug: r.slug, label: r.label })),
   }
@@ -65,7 +64,6 @@ export default async function AdminMentorEditPage({ params }: Props) {
     role_title: profile.role_title ?? null,
     short_bio: profile.short_bio ?? null,
     location_slugs: profile.location_slugs ?? [],
-    discipline_slugs: profile.discipline_slugs ?? [],
     industry_slugs: profile.industry_slugs ?? [],
     what_i_can_help_with: profile.what_i_can_help_with ?? null,
     calendly_url: profile.calendly_url ?? null,
@@ -103,7 +101,6 @@ export default async function AdminMentorEditPage({ params }: Props) {
             role_title: profile.role_title ?? '',
             short_bio: profile.short_bio ?? '',
             location_slugs: profile.location_slugs ?? [],
-            discipline_slugs: profile.discipline_slugs ?? [],
             industry_slugs: profile.industry_slugs ?? [],
             support_area_slugs: profile.support_area_slugs ?? [],
             what_i_can_help_with: profile.what_i_can_help_with ?? '',

@@ -22,7 +22,6 @@ export type MentorProfileFormData = {
   role_title: string | null
   short_bio: string | null
   location_slugs: string[]
-  discipline_slugs: string[]
   industry_slugs: string[]
   support_area_slugs: string[]
   what_i_can_help_with: string | null
@@ -34,7 +33,6 @@ export type MentorProfileFormData = {
 
 type FilterOptions = {
   locations: FilterOption[]
-  disciplines: FilterOption[]
   industries: FilterOption[]
   supportAreas: FilterOption[]
 }
@@ -68,7 +66,6 @@ function buildFormFromProfile(profile: MentorProfileFormData): UpdateProfileData
     role_title: profile.role_title ?? '',
     short_bio: profile.short_bio ?? '',
     location_slugs: profile.location_slugs ?? [],
-    discipline_slugs: profile.discipline_slugs ?? [],
     industry_slugs: profile.industry_slugs ?? [],
     support_area_slugs: profile.support_area_slugs ?? [],
     what_i_can_help_with: profile.what_i_can_help_with ?? '',
@@ -192,7 +189,7 @@ export default function MentorProfileForm({
     if (status !== 'idle') setStatus('idle')
   }
 
-  function toggle(field: 'location_slugs' | 'discipline_slugs' | 'industry_slugs' | 'support_area_slugs', slug: string) {
+  function toggle(field: 'location_slugs' | 'industry_slugs' | 'support_area_slugs', slug: string) {
     setForm((prev) => {
       const current = prev[field] as string[]
       return {
@@ -369,15 +366,7 @@ export default function MentorProfileForm({
         </div>
 
         <FilterGroup
-          label="Lĩnh vực"
-          options={filterOptions.disciplines}
-          selected={form.discipline_slugs}
-          onChange={(slug) => toggle('discipline_slugs', slug)}
-          disabled={!isEditing}
-        />
-
-        <FilterGroup
-          label="Ngành nghề"
+          label="Chuyên môn"
           options={filterOptions.industries}
           selected={form.industry_slugs}
           onChange={(slug) => toggle('industry_slugs', slug)}

@@ -16,7 +16,7 @@ export default async function MentorProfilePage() {
       .from('mentor_profiles')
       .select(`
         id, name, photo_url, role_title, short_bio,
-        location_slugs, discipline_slugs, industry_slugs, support_area_slugs,
+        location_slugs, industry_slugs, support_area_slugs,
         what_i_can_help_with, suitable_mentee_profile, suggested_topics,
         booking_instruction, calendly_url, is_published
       `)
@@ -32,7 +32,6 @@ export default async function MentorProfilePage() {
   const rows = filterRows ?? []
   const filterOptions = {
     locations: rows.filter((r) => r.type === 'location').map((r) => ({ slug: r.slug, label: r.label })),
-    disciplines: rows.filter((r) => r.type === 'discipline').map((r) => ({ slug: r.slug, label: r.label })),
     industries: rows.filter((r) => r.type === 'industry').map((r) => ({ slug: r.slug, label: r.label })),
     supportAreas: rows.filter((r) => r.type === 'support_area').map((r) => ({ slug: r.slug, label: r.label })),
   }

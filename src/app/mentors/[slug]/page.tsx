@@ -110,9 +110,6 @@ export default async function MentorProfilePage({ params }: Props) {
               {(profile.location_slugs ?? []).map((s: string) => (
                 <MentorTag key={s} label={label(s)} variant="location" />
               ))}
-              {(profile.discipline_slugs ?? []).map((s: string) => (
-                <MentorTag key={s} label={label(s)} variant="discipline" />
-              ))}
               {(profile.industry_slugs ?? []).map((s: string) => (
                 <MentorTag key={s} label={label(s)} variant="industry" />
               ))}

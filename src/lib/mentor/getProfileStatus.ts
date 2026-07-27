@@ -3,7 +3,6 @@ export type MentorProfileForStatus = {
   role_title: string | null
   short_bio: string | null
   location_slugs: string[]
-  discipline_slugs: string[]
   industry_slugs: string[]
   what_i_can_help_with: string | null
   calendly_url: string | null
@@ -22,8 +21,7 @@ export function getProfileStatus(profile: MentorProfileForStatus): ProfileStatus
   if (!profile.role_title) missingFields.push('Chức danh / vai trò hiện tại')
   if (!profile.short_bio) missingFields.push('Giới thiệu ngắn')
   if (!profile.location_slugs?.length) missingFields.push('Địa điểm')
-  if (!profile.discipline_slugs?.length) missingFields.push('Lĩnh vực')
-  if (!profile.industry_slugs?.length) missingFields.push('Ngành nghề')
+  if (!profile.industry_slugs?.length) missingFields.push('Chuyên môn')
   if (!profile.what_i_can_help_with) missingFields.push('Mentor có thể hỗ trợ gì')
   if (!profile.calendly_url?.startsWith('https://')) missingFields.push('Đường dẫn Calendly hợp lệ')
 
