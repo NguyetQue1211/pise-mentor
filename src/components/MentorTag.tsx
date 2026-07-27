@@ -1,4 +1,4 @@
-type TagVariant = "location" | "discipline" | "industry" | "support_area" | "default";
+type TagVariant = "location" | "industry" | "support_area" | "default";
 
 interface MentorTagProps {
   label: string;
@@ -7,7 +7,6 @@ interface MentorTagProps {
 
 const variantClasses: Record<TagVariant, string> = {
   location:     "bg-neutral-100 text-neutral-600",
-  discipline:   "bg-primary-50 text-primary-700",
   industry:     "bg-secondary-50 text-secondary-700",
   support_area: "bg-neutral-100 text-neutral-600",
   default:      "bg-neutral-100 text-neutral-600",

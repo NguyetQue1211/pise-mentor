@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import AppHeader from '@/components/AppHeader'
 import AdminPublishToggle from '@/components/AdminPublishToggle'
+import AdminDeleteMentorButton from '@/components/AdminDeleteMentorButton'
 import { getCurrentUser } from '@/lib/auth/getCurrentUser'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { getProfileStatus, type MentorProfileForStatus } from '@/lib/mentor/getProfileStatus'
@@ -83,7 +84,7 @@ export default async function AdminMentorsPage() {
   const { data: mentors } = await admin
     .from('mentor_profiles')
     .select(
-      'id, name, slug, role_title, short_bio, user_id, location_slugs, discipline_slugs, industry_slugs, what_i_can_help_with, calendly_url, is_published, updated_at'
+      'id, name, slug, role_title, short_bio, user_id, location_slugs, industry_slugs, what_i_can_help_with, calendly_url, is_published, updated_at'
     )
     .order('updated_at', { ascending: false })
 
@@ -93,7 +94,6 @@ export default async function AdminMentorsPage() {
       role_title: m.role_title ?? null,
       short_bio: m.short_bio ?? null,
       location_slugs: m.location_slugs ?? [],
-      discipline_slugs: m.discipline_slugs ?? [],
       industry_slugs: m.industry_slugs ?? [],
       what_i_can_help_with: m.what_i_can_help_with ?? null,
       calendly_url: m.calendly_url ?? null,
@@ -210,6 +210,7 @@ export default async function AdminMentorsPage() {
                           isPublished={m.is_published}
                           isComplete={m.isComplete}
                         />
+                        <AdminDeleteMentorButton id={m.id} name={m.name} />
                       </div>
                     </td>
                   </tr>

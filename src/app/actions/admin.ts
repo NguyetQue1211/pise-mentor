@@ -13,7 +13,6 @@ export type AdminProfileData = {
   role_title: string
   short_bio: string
   location_slugs: string[]
-  discipline_slugs: string[]
   industry_slugs: string[]
   support_area_slugs: string[]
   what_i_can_help_with: string
@@ -72,7 +71,6 @@ export async function createMentorProfile(
       role_title: data.role_title || null,
       short_bio: data.short_bio || null,
       location_slugs: data.location_slugs,
-      discipline_slugs: data.discipline_slugs,
       industry_slugs: data.industry_slugs,
       support_area_slugs: data.support_area_slugs,
       what_i_can_help_with: data.what_i_can_help_with || null,
@@ -129,7 +127,6 @@ export async function updateMentorProfile(
       role_title: data.role_title || null,
       short_bio: data.short_bio || null,
       location_slugs: data.location_slugs,
-      discipline_slugs: data.discipline_slugs,
       industry_slugs: data.industry_slugs,
       what_i_can_help_with: data.what_i_can_help_with || null,
       calendly_url: data.calendly_url || null,
@@ -156,7 +153,6 @@ export async function updateMentorProfile(
     role_title: data.role_title || null,
     short_bio: data.short_bio || null,
     location_slugs: data.location_slugs,
-    discipline_slugs: data.discipline_slugs,
     industry_slugs: data.industry_slugs,
     support_area_slugs: data.support_area_slugs,
     what_i_can_help_with: data.what_i_can_help_with || null,
@@ -199,7 +195,7 @@ export async function publishMentor(id: string): Promise<AdminActionResult> {
   const { data: profile } = await admin
     .from('mentor_profiles')
     .select(
-      'name, role_title, short_bio, location_slugs, discipline_slugs, industry_slugs, what_i_can_help_with, calendly_url, is_published'
+      'name, role_title, short_bio, location_slugs, industry_slugs, what_i_can_help_with, calendly_url, is_published'
     )
     .eq('id', id)
     .maybeSingle()
@@ -231,6 +227,21 @@ export async function publishMentor(id: string): Promise<AdminActionResult> {
   return { success: true, calendlyWarning }
 }
 
+export async function deleteMentorProfile(id: string): Promise<AdminActionResult> {
+  const user = await assertAdmin()
+  if (!user) return { success: false, error: 'Unauthorized.' }
+
+  const admin = createAdminClient()
+
+  const { error } = await admin.from('mentor_profiles').delete().eq('id', id)
+
+  if (error) return { success: false, error: 'Something went wrong. Please try again.' }
+
+  revalidatePath('/admin/mentors')
+  revalidatePath('/mentors')
+  return { success: true }
+}
+
 export async function unpublishMentor(id: string): Promise<AdminActionResult> {
   const user = await assertAdmin()
   if (!user) return { success: false, error: 'Unauthorized.' }
@@ -248,4 +259,62 @@ export async function unpublishMentor(id: string): Promise<AdminActionResult> {
   revalidatePath(`/admin/mentors/${id}/edit`)
   revalidatePath('/mentors')
   return { success: true }
+}
+
+const MAX_PHOTO_SIZE = 5 * 1024 * 1024 // 5MB
+const PHOTO_EXT_BY_MIME: Record<string, string> = {
+  'image/jpeg': 'jpg',
+  'image/png': 'png',
+  'image/webp': 'webp',
+}
+
+export type UploadPhotoResult =
+  | { success: true; url: string }
+  | { success: false; error: string }
+
+export async function uploadMentorPhotoAsAdmin(
+  formData: FormData,
+  linkedUserId: string
+): Promise<UploadPhotoResult> {
+  const user = await assertAdmin()
+  if (!user) return { success: false, error: 'Unauthorized.' }
+
+  const file = formData.get('file')
+  if (!(file instanceof File) || file.size === 0) {
+    return { success: false, error: 'No file provided.' }
+  }
+
+  const ext = PHOTO_EXT_BY_MIME[file.type]
+  if (!ext) {
+    return { success: false, error: 'Please upload a JPG, PNG, or WebP image.' }
+  }
+
+  if (file.size > MAX_PHOTO_SIZE) {
+    return { success: false, error: 'Image must be 5MB or smaller.' }
+  }
+
+  const admin = createAdminClient()
+
+  // Keyed by the linked mentor account when there is one, so an admin-set
+  // photo overwrites/gets overwritten by the mentor's own uploads at the
+  // same deterministic path. Drafts not yet linked to a mentor account fall
+  // back to a random path under admin-drafts/.
+  const path = linkedUserId
+    ? `${linkedUserId}/avatar.${ext}`
+    : `admin-drafts/${crypto.randomUUID()}.${ext}`
+
+  const { error: uploadError } = await admin.storage
+    .from('mentor-photos')
+    .upload(path, file, { contentType: file.type, upsert: true })
+
+  if (uploadError) {
+    console.error('[uploadMentorPhotoAsAdmin] storage error:', uploadError.message)
+    return { success: false, error: 'Upload failed. Please try again.' }
+  }
+
+  const { data: publicUrlData } = admin.storage.from('mentor-photos').getPublicUrl(path)
+
+  const url = `${publicUrlData.publicUrl}?v=${Date.now()}`
+
+  return { success: true, url }
 }

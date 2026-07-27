@@ -29,7 +29,6 @@ export default async function AdminMentorsNewPage() {
   const rows = filterRows ?? []
   const filterOptions = {
     locations: rows.filter((r) => r.type === 'location').map((r) => ({ slug: r.slug, label: r.label })),
-    disciplines: rows.filter((r) => r.type === 'discipline').map((r) => ({ slug: r.slug, label: r.label })),
     industries: rows.filter((r) => r.type === 'industry').map((r) => ({ slug: r.slug, label: r.label })),
     supportAreas: rows.filter((r) => r.type === 'support_area').map((r) => ({ slug: r.slug, label: r.label })),
   }

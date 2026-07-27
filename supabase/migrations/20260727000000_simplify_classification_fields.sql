@@ -1,17 +1,35 @@
--- Seed data for PISE Mentorship Portal MVP
--- Run after migrations (initial schema + simplify_classification_fields)
+-- Simplify mentor classification fields
 --
--- Includes:
---   filter_options  — locations, "Lĩnh vực" (industry), "Lĩnh vực hỗ trợ" (support_area)
---   app_config      — feedback_form_url placeholder
+-- Removes the "discipline" field entirely (was labeled "Lĩnh vực" in the UI).
+-- The former "industry" field is relabeled "Lĩnh vực" (data replaced with a new
+-- industry list). The "support_area" field keeps its label "Lĩnh vực hỗ trợ"
+-- but its content is replaced with the former discipline-style expertise list.
+--
+-- All existing mentor_profiles rows and filter_options rows are wiped and
+-- reseeded — this is a deliberate full reset, not an additive change.
 
 -- ============================================================
--- filter_options
+-- mentor_profiles: drop discipline_slugs column
+-- ============================================================
+
+drop index if exists public.mentor_profiles_discipline_slugs_idx;
+
+alter table public.mentor_profiles drop column if exists discipline_slugs;
+
+-- ============================================================
+-- Wipe existing data
+-- ============================================================
+
+delete from public.mentor_profiles;
+delete from public.filter_options;
+
+-- ============================================================
+-- Reseed filter_options
 -- ============================================================
 
 insert into public.filter_options (type, slug, label, sort_order) values
 
--- Locations
+-- Locations (existing 6 + Poland, UK)
 ('location', 'ho-chi-minh-city', 'Ho Chi Minh City',  10),
 ('location', 'hanoi',            'Hanoi',              20),
 ('location', 'vietnam',          'Vietnam',            30),
@@ -21,7 +39,7 @@ insert into public.filter_options (type, slug, label, sort_order) values
 ('location', 'poland',           'Ba Lan',             70),
 ('location', 'united-kingdom',   'UK',                 80),
 
--- "Lĩnh vực" (type=industry)
+-- "Lĩnh vực" (type=industry — replaces the old "Ngành nghề" content)
 ('industry', 'saas',                          'SaaS',                                  10),
 ('industry', 'technology',                    'Technology',                            20),
 ('industry', 'education',                     'Education',                             30),
@@ -40,7 +58,7 @@ insert into public.filter_options (type, slug, label, sort_order) values
 ('industry', 'global-affairs',                'Global Affairs',                        160),
 ('industry', 'youth-community-development',   'Youth & Community Development',         170),
 
--- "Lĩnh vực hỗ trợ" (type=support_area; display tags only, not a filter in MVP)
+-- "Lĩnh vực hỗ trợ" (type=support_area — replaces the old expertise/discipline content)
 ('support_area', 'product-management',            'Product Management',                                        10),
 ('support_area', 'ux-research',                   'UX Research',                                                20),
 ('support_area', 'ui-ux-design',                  'UI/UX Design',                                               30),
@@ -68,15 +86,3 @@ insert into public.filter_options (type, slug, label, sort_order) values
 ('support_area', 'stakeholder-management',        'Stakeholder Management',                                   250)
 
 on conflict (type, slug) do nothing;
-
--- ============================================================
--- app_config
--- ============================================================
-
-insert into public.app_config (key, value, description)
-values (
-  'feedback_form_url',
-  '',
-  'External Google Form or Tally link shown to users for post-session feedback. Leave empty to hide the feedback link.'
-)
-on conflict (key) do nothing;

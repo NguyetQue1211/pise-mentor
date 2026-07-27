@@ -45,14 +45,31 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center px-4 bg-neutral-50">
-      <div className="w-full max-w-md bg-white border border-neutral-200 rounded-2xl shadow-sm px-8 py-10 space-y-8">
+    <main className="min-h-screen flex flex-col bg-neutral-50">
+      {/* Top bar */}
+      <header className="bg-white shrink-0">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center h-16">
+            <span className="flex items-center gap-2 text-base font-bold text-neutral-900 tracking-tight">
+              <img src="/logo.jpeg" alt="PISE" className="h-7 w-7 rounded-md object-cover" />
+              PISE Mentors
+            </span>
+          </div>
+        </div>
+        <div className="h-[3px] bg-gradient-secondary" />
+      </header>
 
-        <p className="text-sm font-bold text-primary-600 uppercase tracking-widest">
-          PISE Mentors
-        </p>
+      {/* Hero with cover background */}
+      <div className="relative flex-1 flex items-center justify-center px-4 py-16 overflow-hidden">
+        <div
+          className="absolute inset-0 scale-110 bg-cover bg-center blur-md"
+          style={{ backgroundImage: "url('/login-cover.jpg')" }}
+        />
+        <div className="absolute inset-0 bg-white/25" />
 
-        {status === 'success' ? (
+        <div className="relative w-full max-w-md bg-white rounded-2xl shadow-xl px-8 py-10 space-y-8">
+
+          {status === 'success' ? (
           <div className="space-y-3">
             <h1 className="text-2xl font-bold text-neutral-900">
               Kiểm tra hộp thư của bạn
@@ -125,7 +142,8 @@ export default function LoginPage() {
               phê duyệt.
             </p>
           </form>
-        )}
+          )}
+        </div>
       </div>
     </main>
   )
