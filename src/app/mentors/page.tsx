@@ -47,6 +47,9 @@ export default async function MentorsPage() {
     industries: rows
       .filter((r) => r.type === 'industry')
       .map((r) => ({ slug: r.slug, label: r.label })),
+    supportAreas: rows
+      .filter((r) => r.type === 'support_area')
+      .map((r) => ({ slug: r.slug, label: r.label })),
   }
 
   return (

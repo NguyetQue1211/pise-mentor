@@ -1,6 +1,7 @@
 'use server'
 
 import { createAdminClient } from '@/lib/supabase/admin'
+import { enforcePostAuthWhitelist } from '@/lib/auth/enforcePostAuthWhitelist'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
@@ -48,11 +49,13 @@ export async function requestLoginLink(rawEmail: string): Promise<LoginResult> {
     }
   }
 
-  // Approved and active — send magic link via SSR client (not admin client).
-  // The SSR client uses PKCE with cookie-based code verifier storage, so Supabase
-  // generates a ?code= link. The plain admin client (supabase-js) has no code
-  // verifier storage and falls back to the implicit flow (#access_token hash),
-  // which the Route Handler callback cannot read.
+  // Approved and active — send an OTP code via SSR client.
+  // Deliberately not passing emailRedirectTo: a clickable magic link opened
+  // from a mobile Mail/Gmail app's in-app browser fails, because that
+  // browser doesn't share cookies with the one that made this request (so
+  // the PKCE code_verifier cookie is missing at /auth/callback). A typed
+  // code has no such dependency — the user enters it back into this same
+  // browser session, so verifyOtp below can always find the right session.
   const cookieStore = await cookies()
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -71,12 +74,7 @@ export async function requestLoginLink(rawEmail: string): Promise<LoginResult> {
     }
   )
 
-  const { error: otpError } = await supabase.auth.signInWithOtp({
-    email,
-    options: {
-      emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`,
-    },
-  })
+  const { error: otpError } = await supabase.auth.signInWithOtp({ email })
 
   if (otpError) {
     console.error('[requestLoginLink] otp error:', otpError.message)
@@ -84,6 +82,53 @@ export async function requestLoginLink(rawEmail: string): Promise<LoginResult> {
       success: false,
       code: 'AUTH_ERROR',
       message: otpError.message,
+    }
+  }
+
+  return { success: true }
+}
+
+export async function verifyLoginCode(rawEmail: string, rawToken: string): Promise<LoginResult> {
+  const email = rawEmail.trim().toLowerCase()
+  const token = rawToken.trim()
+
+  const cookieStore = await cookies()
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll()
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) =>
+            cookieStore.set(name, value, options)
+          )
+        },
+      },
+    }
+  )
+
+  const { data, error } = await supabase.auth.verifyOtp({ email, token, type: 'email' })
+
+  if (error || !data.user) {
+    console.error('[verifyLoginCode] verifyOtp error:', error?.message, error?.code, error?.status)
+    return {
+      success: false,
+      code: 'AUTH_ERROR',
+      message: 'Mã không đúng hoặc đã hết hạn. Vui lòng thử lại.',
+    }
+  }
+
+  const allowed = await enforcePostAuthWhitelist(data.user.id, email)
+
+  if (!allowed) {
+    await supabase.auth.signOut()
+    return {
+      success: false,
+      code: 'UNAPPROVED',
+      message: 'This email is not approved for access. Please contact the PISE team if you believe this is a mistake.',
     }
   }
 
